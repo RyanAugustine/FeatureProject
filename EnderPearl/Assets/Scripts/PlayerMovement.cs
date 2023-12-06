@@ -9,13 +9,9 @@ public class PlayerMovement : MonoBehaviour
 
     public float groundDrag;
 
-    private float jumpForce;
-    public float jumpCooldown;
+   
     public float airMultiplier;
-    bool readyToJump;
-
-    [Header("Keybinds")]
-    public KeyCode jumpKey = KeyCode.Space;
+    
 
     [Header("Ground Check")]
     public float playerHeight;
@@ -61,17 +57,18 @@ public class PlayerMovement : MonoBehaviour
         horizontalInput = Input.GetAxisRaw("Horizontal");
         verticalInput = Input.GetAxisRaw("Vertical");
 
-        if(Input.GetKey(jumpKey) && readyToJump && grounded)
-        {
-
-        }
+       
     }
 
     private void MovePlayer()
     {
         moveDirection = orientation.forward * verticalInput + orientation.right * horizontalInput;
 
-        rb.AddForce(moveDirection.normalized * moveSpeed * 10f, ForceMode.Force);
+        if(grounded)
+            rb.AddForce(moveDirection.normalized * moveSpeed * 10f, ForceMode.Force);
+
+        else if(!grounded)
+            rb.AddForce(moveDirection.normalized * moveSpeed * 10f * airMultiplier, ForceMode.Force);
     }
 
     private void SpeedControl()
@@ -85,14 +82,5 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    private void Jump()
-    {
-        rb.velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
-
-        rb.AddForce(transform.up * jumpForce, ForceMode.Impulse);
-    }
-    private void ResetJump()
-    {
-        readyToJump = true;
-    }
+   
 }
