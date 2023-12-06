@@ -2,6 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+//Augustine, Ryan
+//12/5/23
+//THis script will allow the player to move.
 public class PlayerMovement : MonoBehaviour
 {
     [Header("Movement")]

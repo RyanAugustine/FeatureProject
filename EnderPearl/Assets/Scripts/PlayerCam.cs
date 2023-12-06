@@ -2,6 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+//Augustine, Ryan
+//12/5/23
+//THis script will make a first person camera for the player
+
 public class PlayerCam : MonoBehaviour
 {
     public float sensX;

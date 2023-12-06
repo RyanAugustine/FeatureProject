@@ -2,22 +2,23 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+//Augustine, Ryan
+//12/5/23
+//This script will allow the player to throw the ender pearl.
 public class Throw : MonoBehaviour
 {
     [Header("References")]
     public Transform cam;
     public Transform attackPoint;
     public GameObject Enderpearl;
+    public GameObject currentEnderpearl;
 
     [Header("Settings")]
-    public int totalThrows;
     public float throwCooldown;
+    private bool PearlOut;
 
     [Header("Throwing")]
-    public KeyCode throwKey = KeyCode.Mouse0;
     public float throwForce;
-    public float throwwUpwardForce;
-
     public bool readyToThrow;
 
     public void Start()
@@ -27,33 +28,68 @@ public class Throw : MonoBehaviour
 
     private void Update()
     {
-        if(Input.GetKeyDown(throwKey) && readyToThrow && totalThrows > 0)
-        {
-            Yeet();
-        }
+        Yeet();
+        TeleportNow();
     }
 
     private void Yeet()
     {
-        readyToThrow = false;
+        if (Input.GetMouseButtonDown(0))
+        {
+            if (readyToThrow == true)
+            {
+                if (!PearlOut)
+                {
+                    currentEnderpearl = Instantiate(Enderpearl, attackPoint.position, Quaternion.identity) as GameObject;
+                    currentEnderpearl.GetComponent<Rigidbody>().AddForce(cam.transform.forward * throwForce, ForceMode.Impulse);
 
-        GameObject projectile = Instantiate(Enderpearl, attackPoint.position, cam.rotation);
+                    PearlOut = true;
+                }
 
-        Rigidbody projectileRb = projectile.GetComponent<Rigidbody>();
+                if (PearlOut)
+                {
+                    Destroy(currentEnderpearl);
+                    currentEnderpearl = null;
+                    currentEnderpearl = Instantiate(Enderpearl, attackPoint.position, Quaternion.identity) as GameObject;
+                    currentEnderpearl.GetComponent<Rigidbody>().AddForce(cam.transform.forward * throwForce, ForceMode.Impulse);
 
-        Vector3 forceToAdd = cam.transform.forward * throwForce + transform.up * throwwUpwardForce;
+                    PearlOut = true;
+                }
 
-        projectileRb.AddForce(forceToAdd, ForceMode.Impulse);
+            }
 
-        //Implement throwCooldown
-        Invoke(nameof(ResetThrow), throwCooldown);
-       
-        readyToThrow = true;
-    
+            readyToThrow = false;
+
+            Invoke(nameof(ResetThrow), throwCooldown);
+
+        }
+   
+    }
+
+    private void TeleportNow()
+    {
+        if (Input.GetMouseButtonDown(1))
+        {
+            if (PearlOut)
+            {
+                float teleportOffset = GetComponent<CapsuleCollider>().height / 2;
+                Vector3 grenadePosition = currentEnderpearl.transform.position;
+                Vector3 teleportLocation = new Vector3(grenadePosition.x, grenadePosition.y + teleportOffset, grenadePosition.z);
+                transform.position = teleportLocation;
+                Destroy(currentEnderpearl);
+                currentEnderpearl = null;
+                PearlOut = false;
+            }
+            if (!PearlOut)
+            {
+                return;
+            }
+
+        }
     }
 
     private void ResetThrow()
     {
-
+        readyToThrow = true;
     }
 }
